@@ -13,11 +13,10 @@ var titles_array = []string{"the Mighty Traveler", "the Great Summoner", "the Co
 
 var page_access_count = 0
 
-/* handler for api call "/hello"
- * Its possible to give a 'name' parameter as "/hello?name=John"
- * to greet John specificaly
- */
-func say_hello(rw http.ResponseWriter, req *http.Request) {
+// sayHello is a handler for api call "/hello"
+// Its possible to give a 'name' parameter as "/hello?name=John"
+// to greet John specificaly
+func sayHello(rw http.ResponseWriter, req *http.Request) {
 
 	parser := (req.URL).String()
 	if strings.Contains(parser, "name=") { //greet a person if "name" parameter is given

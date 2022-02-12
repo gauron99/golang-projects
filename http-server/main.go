@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-var greetings_array = []string{"Hello", "Greetings", "Welcome", "Hi"}
-var titles_array = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
+var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
+var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
-var page_access_count = 0
+var pageAccessCount = 0
 var param = ""
 
 func webWriter(rw http.ResponseWriter, s string) {
@@ -34,26 +34,25 @@ func sayHello(rw http.ResponseWriter, req *http.Request) {
 		if len(name) == 0 { //greet "nobody"
 			webWriter(rw, "Greetings Mr. Nobody!")
 		} else { // greet specific person
-			webWriter(rw, greetings_array[rand.Intn(len(greetings_array))]+" "+name+" "+titles_array[rand.Intn(len(titles_array))])
+			webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
 		}
 	} else { //greet generic
-		webWriter(rw, "Hello there! This page has been accessed "+strconv.FormatInt(int64(page_access_count), 10)+"x times\n")
+		webWriter(rw, "Hello there! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times\n")
 	}
 
-	page_access_count += 1
+	pageAccessCount += 1
 
+	// TODO
+	// func getCurrTime() {
+	// }
 }
-
-// TODO
-// func getCurrTime() {
-// }
 
 func apiHome(rw http.ResponseWriter, req *http.Request) {
 	// start ticker
-	// tick_sec := time.NewTicker(1 * time.Second) //tick every second to show current time
+	// tickSec := time.NewTicker(1 * time.Second) //tick every second to show current time
 	// for {
 	// 	select {
-	// 	case t := <-tick_sec.C:
+	// 	case t := <-tickSec.C:
 	// 		fmt.Fprintf(rw, t.Format("2006-01-02 15:04:05"))
 	// 	}
 	// }
@@ -69,12 +68,12 @@ func apiHome(rw http.ResponseWriter, req *http.Request) {
 func argParser() {
 	if len(os.Args) > 1 {
 		args := os.Args[1:]
-		capture_para := false
+		capturePara := false
 
 		for _, item := range args { //parse each argument
-			if capture_para == true {
+			if capturePara == true {
 				param = item
-				capture_para = false
+				capturePara = false
 
 			} else if strings.HasPrefix(item, "--parameter") || strings.HasPrefix(item, "--param") || strings.HasPrefix(item, "-p") {
 				if strings.Contains(item, "=") { //if parameter contains '=' -> extract the argument
@@ -84,7 +83,7 @@ func argParser() {
 						param = item
 					}
 				} else {
-					capture_para = true // capture next parameter
+					capturePara = true // capture next parameter
 				}
 
 			} else {

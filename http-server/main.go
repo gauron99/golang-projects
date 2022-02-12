@@ -28,6 +28,7 @@ func webWriter(rw http.ResponseWriter, s string) {
 // to greet John specificaly
 func sayHello(rw http.ResponseWriter, req *http.Request) {
 
+	// TODO -- rewrite this using url parser import "net/url"-> url.Parse()
 	parser := (req.URL).String()
 	if strings.Contains(parser, "name=") { //greet a person if "name" parameter is given
 		name := parser[12:]

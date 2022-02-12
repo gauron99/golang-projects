@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
-	"math/rand" // random number generator
-	"net/http"  //web stuff
+	"math/rand"
+
+	// "math/rand" // random number generator
+	"net/http" //web stuff
+	"net/url"
 	"os"
+
 	"strconv" //string conversion
 	"strings" //string manipulation
 	"time"
@@ -28,24 +32,32 @@ func webWriter(rw http.ResponseWriter, s string) {
 // to greet John specificaly
 func sayHello(rw http.ResponseWriter, req *http.Request) {
 
-	// TODO -- rewrite this using url parser import "net/url"-> url.Parse()
-	parser := (req.URL).String()
-	if strings.Contains(parser, "name=") { //greet a person if "name" parameter is given
-		name := parser[12:]
-		if len(name) == 0 { //greet "nobody"
-			webWriter(rw, "Greetings Mr. Nobody!")
-		} else { // greet specific person
-			webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
-		}
-	} else { //greet generic
-		webWriter(rw, "Hello there! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times\n")
+	URL := req.URL.String()
+	u, err := url.Parse(URL) //parsed url
+	if err != nil {
+		panic(err)
 	}
+	// parse query
+	args, _ := url.ParseQuery(u.RawQuery)
 
+	nameExists := false
+	// cycle through all arguments given and search for "name"
+	for key, val := range args {
+		if strings.Compare(key, "name") == 0 { //name argument exists
+			nameExists = true
+			if len(val) < 1 { //no name given
+				webWriter(rw, "Greetings Mr. Nobody!")
+			} else { // atleast one name given
+				for _, name := range val {
+					webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
+				}
+			}
+		}
+	}
+	if nameExists == false {
+		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times\n")
+	}
 	pageAccessCount += 1
-
-	// TODO
-	// func getCurrTime() {
-	// }
 }
 
 func apiHome(rw http.ResponseWriter, req *http.Request) {

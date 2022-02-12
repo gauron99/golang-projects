@@ -7,8 +7,8 @@ import (
 	// "math/rand" // random number generator
 	"net/http" //web stuff
 	"net/url"
-	"os"
 
+	"flag"
 	"strconv" //string conversion
 	"strings" //string manipulation
 	"time"
@@ -18,8 +18,22 @@ var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
 var pageAccessCount = 0
-var param = ""
+var param string
 
+// --- Parse cli arguments ---
+// Only looking for long: "param" / short: "p"
+// Can be given with "=" or as following argument
+// 		ex: "--param=hello" or "--param hello" or "-p=hello"
+// If param is given multiple times, save only the last one
+
+func init() {
+
+	flag.StringVar(&param, "param", "", "print this everywhere")
+	flag.StringVar(&param, "p", "", "print this everywhere")
+
+}
+
+// write to browser (if ENV variable or CLI parameter are given, print those too)
 func webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
 	if len(param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
@@ -73,47 +87,12 @@ func apiHome(rw http.ResponseWriter, req *http.Request) {
 	fmt.Println("Now: ", t.Format("2006-01-02 15:04:05"))
 }
 
-// --- Parse cli arguments ---
-// Only looking for long: "parameter" or "param" / short: "p"
-// Can be given with "=" or as following argument
-// 		ex: "--param=hello" or "--param hello" or "-p=hello"
-// Ignores unknown arguments
-func argParser() {
-	if len(os.Args) > 1 {
-		args := os.Args[1:]
-		capturePara := false
-
-		for _, item := range args { //parse each argument
-			if capturePara == true {
-				param = item
-				capturePara = false
-
-			} else if strings.HasPrefix(item, "--parameter") || strings.HasPrefix(item, "--param") || strings.HasPrefix(item, "-p") {
-				if strings.Contains(item, "=") { //if parameter contains '=' -> extract the argument
-					item = item[strings.IndexByte(item, '='):][1:] //cut string until '=' (exluding =)
-
-					if len(item) > 0 { //if len is 0 do nothing
-						param = item
-					}
-				} else {
-					capturePara = true // capture next parameter
-				}
-
-			} else {
-				fmt.Println("Unknown parameter '", item, "' given, ignoring.")
-			}
-		}
-	}
-}
-
 func main() {
 
 	// handle possible cli arguments & set
-	argParser()
+	flag.Parse()
+	fmt.Println(param)
 
-	if param != "" {
-		fmt.Println("I have a parameter!", param)
-	}
 	fmt.Println("Server started...")
 	defer fmt.Println("Server closed. Bye") //print at the end? need to catch signal to properly end main() probably
 

@@ -1,0 +1,29 @@
+name: Basic Build Test
+on:
+  push:
+    branches: [ main testing ]
+  pull_request:
+   branches: [ testing ]
+jobs:
+  validate:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    container: ubuntu:focal
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v2.2.0
+        with:
+          go-version: 1.16
+# possibly install necesary pacakges here
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+  
+      - name: Build
+        run: go build
+
+      # name: Test
+      # run: go test
+      

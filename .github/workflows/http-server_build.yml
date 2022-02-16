@@ -1,7 +1,12 @@
-name: Basic Build Test
+name: http-server -> Basic Build
 on:
-  - push
-  - pull_request
+  push:
+    paths: 
+      - http-server/**
+  pull_request:
+    paths:
+      - http-server/**
+
 jobs:
   validate:
     name: Validate PR
@@ -20,7 +25,7 @@ jobs:
           fetch-depth: 1
   
       - name: Build
-        run: go build ./...
+        run: cd http-server && go build ./...
 
       # name: Test
       # run: go test

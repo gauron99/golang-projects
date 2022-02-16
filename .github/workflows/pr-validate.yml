@@ -1,7 +1,6 @@
-name: Basic checks for PR
+name: Basic PR test
 on:
-  pull_request:
-    types: [opened, reopened]
+  - pull_request
 jobs:
   validate:
     name: Validate PR
@@ -9,7 +8,7 @@ jobs:
     container: ubuntu:focal
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
 # possibly install necesary pacakges here

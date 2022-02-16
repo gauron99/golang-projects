@@ -1,6 +1,9 @@
-name: Basic PR test
+name: Basic Build Test
 on:
-  - pull_request
+  push:
+    branches: [ main testing ]
+  pull_request:
+   branches: [ testing ]
 jobs:
   validate:
     name: Validate PR
@@ -19,7 +22,7 @@ jobs:
           fetch-depth: 1
   
       - name: Build
-        run: go build  
+        run: go build
 
       # name: Test
       # run: go test

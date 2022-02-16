@@ -2,10 +2,10 @@ name: http-server -> Basic Build
 on:
   push:
     paths: 
-      - 'http-server/**'
+      - http-server/**
   pull_request:
     paths:
-      - 'http-server/**'
+      - http-server/**
 
 jobs:
   validate:

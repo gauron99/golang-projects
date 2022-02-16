@@ -1,9 +1,7 @@
 name: Basic Build Test
 on:
-  push:
-    branches: [ main testing ]
-  pull_request:
-   branches: [ testing ]
+  - push
+  - pull_request
 jobs:
   validate:
     name: Validate PR

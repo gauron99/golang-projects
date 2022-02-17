@@ -17,17 +17,16 @@ import (
 // If param is given multiple times, save only the last one
 
 func init() {
-
-	flag.StringVar(&server.Param, "param", "", "print this everywhere")
-	flag.StringVar(&server.Param, "p", "", "print this everywhere")
-
+	paramPtr := server.GetParam()
+	flag.StringVar(paramPtr, "param", "", "print this everywhere")
+	flag.StringVar(paramPtr, "p", "", "print this everywhere")
 }
 
 func main() {
 
 	// handle possible cli arguments & set
 	flag.Parse()
-	fmt.Println(server.Param)
+	fmt.Println(*server.GetParam())
 
 	fmt.Println("Server started...")
 	defer fmt.Println("Server closed. Bye") //print at the end? need to catch signal to properly end main() probably

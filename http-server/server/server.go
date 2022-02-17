@@ -11,17 +11,22 @@ import (
 )
 
 var pageAccessCount = 0
-var Param string
+var param string
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
+// GetParam returns pointer to param variable (for other packages)
+func GetParam() *string {
+	return &param
+}
+
 // webWriter takes input string and writes it to browser
 // additionally if ENV variable or CLI parameter are given, print those too
-func WebWriter(rw http.ResponseWriter, s string) {
+func webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
-	if len(Param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
-		fmt.Fprintf(rw, "I have a parameter! Here: %s\n", Param)
+	if len(param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+		fmt.Fprintf(rw, "I have a parameter! Here: %s\n", param)
 	}
 }
 
@@ -43,17 +48,17 @@ func SayHello(rw http.ResponseWriter, req *http.Request) {
 	for key, val := range args {
 		if strings.Compare(key, "name") == 0 { //name argument exists
 			nameExists = true
-			if len(val) < 1 { //no name given
-				WebWriter(rw, "Greetings Mr. Nobody!")
+			if len(val) == 1 && len(val[0]) == 0 { //no name given
+				webWriter(rw, "Greetings Mr. Nobody!")
 			} else { // atleast one name given
 				for _, name := range val {
-					WebWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
+					webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
 				}
 			}
 		}
 	}
 	if nameExists == false {
-		WebWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times\n")
+		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times")
 	}
 	pageAccessCount += 1
 }

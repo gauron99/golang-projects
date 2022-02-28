@@ -27,6 +27,7 @@ jobs:
       - name: Build
         run: cd http-server && go build ./...
 
-      # name: Test
-      # run: go test
+      # run basic tests for server
+      - name: Test
+        run: cd http-server/server && go test
       

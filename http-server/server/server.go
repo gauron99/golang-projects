@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -21,12 +22,20 @@ func GetParam() *string {
 	return &param
 }
 
+func SetParam(s string) {
+	param = s
+}
+
 // webWriter takes input string and writes it to browser
 // additionally if ENV variable or CLI parameter are given, print those too
 func webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
 	if len(param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
-		fmt.Fprintf(rw, "I have a parameter! Here: %s\n", param)
+
+		out := fmt.Sprintf("I have a parameter! Here: %s\n", param)
+		// outPrt := fmt.Sprintf("I have a parameter!! Here: %s\n", param)
+		// fmt.Fprintf(rw, outPrt)
+		io.WriteString(rw, out)
 	}
 }
 
@@ -74,4 +83,11 @@ func ApiHome(rw http.ResponseWriter, req *http.Request) {
 	// }
 	t := time.Now()
 	fmt.Println("Now: ", t.Format("2006-01-02 15:04:05"))
+}
+
+func Secret(rw http.ResponseWriter, req *http.Request) {
+
+	//temporary -> testing tests
+	rw.WriteHeader(http.StatusOK) //check the status
+	webWriter(rw, "psst, a secret")
 }

@@ -33,7 +33,9 @@ func main() {
 
 	http.HandleFunc("/", server.ApiHome)
 	http.HandleFunc("/hello", server.SayHello)
+	http.HandleFunc("/secret", server.Secret)
 
+	fmt.Println("Listening on port 8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))
 
 }

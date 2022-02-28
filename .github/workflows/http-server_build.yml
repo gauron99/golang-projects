@@ -25,9 +25,11 @@ jobs:
           fetch-depth: 1
   
       - name: Build
-        run: cd http-server && go build ./...
+        working-directory: "./http-server"
+        run: go build ./...
 
       # run basic tests for server
       - name: Test
-        run: cd http-server/server && go test
+        working-directory: "./http-server/server"
+        run: go test
       

@@ -26,8 +26,11 @@ jobs:
           # version: latest
           # platform: x64
 # some fun stuff for go
-      - name: Download gcc
-        run: apt-get install build-essential 
+      # - name: Download gcc
+      - run: ls
+      - run: pwd
+      - run: echo $PATH
+      - run: echo $GOPATH
 
       - name: Setup Go
         uses: actions/setup-go@v2.2.0

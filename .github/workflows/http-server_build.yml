@@ -26,8 +26,8 @@ jobs:
           # version: latest
           # platform: x64
 # some fun stuff for go
-      # - name: Fun stuff setup
-        # uses: 
+      - name: Download gcc
+        run: apt-get install build-essential 
 
       - name: Setup Go
         uses: actions/setup-go@v2.2.0

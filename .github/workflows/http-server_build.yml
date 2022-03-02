@@ -27,7 +27,7 @@ jobs:
           # platform: x64
 # some fun stuff for go
       # - name: Download gcc
-      - run: sudo apt-get install gcc
+      - run: apt-get install gcc
       # - run: echo $PATH
 
       - name: Setup Go

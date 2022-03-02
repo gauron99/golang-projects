@@ -27,10 +27,9 @@ jobs:
           # platform: x64
 # some fun stuff for go
       # - name: Download gcc
-      - run: ls
-      - run: pwd
-      - run: echo $PATH
-      - run: echo $GOPATH
+      - run: ls -l -R
+      - run: which go
+      # - run: echo $PATH
 
       - name: Setup Go
         uses: actions/setup-go@v2.2.0

@@ -3,9 +3,11 @@ on:
   push:
     paths: 
       - http-server/**
+      - .github/workflows/**
   pull_request:
     paths:
       - http-server/**
+      - .github/workflows/**
 
 jobs:
   validate:
@@ -13,21 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:focal
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+# some fun stuff for go
+      # - name: Fun stuff setup
+        # uses: 
+
       - name: Setup Go
         uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.17
 # possibly install necesary pacakges here
-      - name: Set up GCC
-        uses: egor-tensin/setup-gcc@v1
-        with:
-          version: latest
-          platform: x64
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-  
+      # - name: Set up GCC
+        # uses: egor-tensin/setup-gcc@v1
+        # with:
+          # version: latest
+          # platform: x64
       - name: Build
         working-directory: "./http-server"
         run: go build ./...

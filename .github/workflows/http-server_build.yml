@@ -39,6 +39,6 @@ jobs:
 
       # run basic tests for server
       - name: Test
-        working-directory: "server"
+        working-directory: "./http-server/server"
         run: go test
       

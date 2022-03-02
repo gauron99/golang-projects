@@ -12,7 +12,7 @@ import (
 )
 
 var pageAccessCount = 0
-var param string
+var param string = ""
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
@@ -22,6 +22,7 @@ func GetParam() *string {
 	return &param
 }
 
+// SetParam sets a parameter value
 func SetParam(s string) {
 	param = s
 }

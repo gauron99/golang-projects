@@ -15,25 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:focal
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-# possibly install necesary pacakges here
-      # - name: Set up GCC
-        # uses: egor-tensin/setup-gcc@v1
-        # with:
-          # version: latest
-          # platform: x64
-# some fun stuff for go
-      # - name: Download gcc
-      - run: apt-get install gcc
-      # - run: echo $PATH
-
       - name: Setup Go
         uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.17
+      - name: Install necessary packages
+        run: apt update && apt install -y gcc
+
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          
       - name: Build
         working-directory: "./http-server"
         run: go build ./...

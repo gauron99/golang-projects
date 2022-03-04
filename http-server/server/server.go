@@ -11,29 +11,34 @@ import (
 	"time"
 )
 
-var pageAccessCount = 0
-var param string = ""
+// change this to use methods in the file
+type serverInfo struct {
+	pageAccessCount int
+	param           string
+}
+
+var serv = serverInfo{}
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
-// GetParam returns pointer to param variable (for other packages)
-func GetParam() *string {
-	return &param
+// SetParam takes string argument and sets it as parameter for the program
+func SetParam(s string) {
+	serv.param = s
 }
 
-// SetParam sets a parameter value
-func SetParam(s string) {
-	param = s
+// getParam returns program parameter as string
+func (si serverInfo) getParam() string {
+	return si.param
 }
 
 // webWriter takes input string and writes it to browser
 // additionally if ENV variable or CLI parameter are given, print those too
 func webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
-	if len(param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+	if len(serv.getParam()) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
-		out := fmt.Sprintf("I have a parameter! Here: %s\n", param)
+		out := fmt.Sprintf("I have a parameter! Here: %s\n", serv.getParam())
 		// outPrt := fmt.Sprintf("I have a parameter!! Here: %s\n", param)
 		// fmt.Fprintf(rw, outPrt)
 		io.WriteString(rw, out)
@@ -67,14 +72,14 @@ func SayHello(rw http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
-	if nameExists == false {
-		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(pageAccessCount), 10)+"x times")
+	if !nameExists {
+		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(serv.pageAccessCount), 10)+"x times")
 	}
-	pageAccessCount += 1
+	serv.pageAccessCount += 1
 }
 
 func ApiHome(rw http.ResponseWriter, req *http.Request) {
-	// start ticker
+	// TODO start ticker
 	// tickSec := time.NewTicker(1 * time.Second) //tick every second to show current time
 	// for {
 	// 	select {

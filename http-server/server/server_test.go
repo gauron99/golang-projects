@@ -1,13 +1,10 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
-
-var myprint = fmt.Println
 
 // TestResponse tests basic response function
 func TestResponse(t *testing.T) { // works
@@ -29,7 +26,6 @@ func TestResponse(t *testing.T) { // works
 
 	// check body response
 	expected := "psst, a secret\n"
-	// fmt.Println("Response body: ", res.Body.String())
 	if res.Body.String() != expected {
 		t.Errorf("Body of response doesnt match really :(")
 
@@ -61,30 +57,3 @@ func TestWebWriter(t *testing.T) {
 
 	//TODO test error case next
 }
-
-// TestApiHome test api call to home page "/"
-// It is expected that current time will be printed out
-// func TestApiHome(t *testing.T) {
-// 	req, err := http.NewRequest("GET", "/", nil)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	rr := httptest.NewRecorder()
-// 	hdlr := http.HandlerFunc(ApiHome)
-// 	hdlr.ServeHTTP(rr, req)
-
-// 	fmt.Println("status:", rr.Code)
-// 	if status := rr.Code; status != http.StatusOK {
-// 		t.Errorf("handler returned wrong status code: got %v want %v",
-// 			status, http.StatusOK)
-// 	}
-
-// 	expected := time.Now().Format("2006-01-02 15:04:05")
-// 	got := rr.Body.String()
-
-// 	fmt.Println("exp:", expected, "; got:", got)
-// 	if got != expected {
-
-// 		t.Errorf("Http body fail. Expected %v but got %v ", expected, got)
-// 	}
-// }

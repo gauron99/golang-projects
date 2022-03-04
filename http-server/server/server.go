@@ -14,31 +14,24 @@ import (
 // change this to use methods in the file
 type serverInfo struct {
 	pageAccessCount int
-	param           string
+	Param           string
 }
 
-var Serv = serverInfo{}
+// MakeServerInfo creates & returns newly initialized serverInfo structure with given args
+func MakeServerInfo(pageAccessCnt int, parameter string) *serverInfo {
+	return &serverInfo{pageAccessCnt, parameter}
+}
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
-// SetParam takes string argument and sets it as parameter for the program
-func (si *serverInfo) SetParam(s string) {
-	si.param = s
-}
-
-// getParam returns program parameter as string
-func (si serverInfo) getParam() string {
-	return si.param
-}
-
 // webWriter takes input string and writes it to browser
 // additionally if ENV variable or CLI parameter are given, print those too
-func webWriter(rw http.ResponseWriter, s string) {
+func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
-	if len(Serv.getParam()) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+	if len(si.Param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
-		out := fmt.Sprintf("I have a parameter! Here: %s\n", Serv.getParam())
+		out := fmt.Sprintf("I have a parameter! Here: %s\n", si.Param)
 		io.WriteString(rw, out)
 	}
 }
@@ -46,7 +39,7 @@ func webWriter(rw http.ResponseWriter, s string) {
 // SayHello is a handler for api call "/hello"
 // Its possible to give a 'name' parameter as "/hello?name=John"
 // to greet John specificaly
-func SayHello(rw http.ResponseWriter, req *http.Request) {
+func (si *serverInfo) SayHello(rw http.ResponseWriter, req *http.Request) {
 
 	URL := req.URL.String()
 	u, err := url.Parse(URL) //parsed url
@@ -62,21 +55,21 @@ func SayHello(rw http.ResponseWriter, req *http.Request) {
 		if strings.Compare(key, "name") == 0 { //name argument exists
 			nameExists = true
 			if len(val) == 1 && len(val[0]) == 0 { //no name given
-				webWriter(rw, "Greetings Mr. Nobody!")
+				si.webWriter(rw, "Greetings Mr. Nobody!")
 			} else { // atleast one name given
 				for _, name := range val {
-					webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
+					si.webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
 				}
 			}
 		}
 	}
 	if !nameExists {
-		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(Serv.pageAccessCount), 10)+"x times")
+		si.webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(si.pageAccessCount), 10)+"x times")
 	}
-	Serv.pageAccessCount += 1
+	si.pageAccessCount += 1
 }
 
-func ApiHome(rw http.ResponseWriter, req *http.Request) {
+func (si serverInfo) ApiHome(rw http.ResponseWriter, req *http.Request) {
 	// TODO start ticker
 	// tickSec := time.NewTicker(1 * time.Second) //tick every second to show current time
 	// for {
@@ -87,11 +80,4 @@ func ApiHome(rw http.ResponseWriter, req *http.Request) {
 	// }
 	t := time.Now()
 	fmt.Println("Now: ", t.Format("2006-01-02 15:04:05"))
-}
-
-func Secret(rw http.ResponseWriter, req *http.Request) {
-
-	//temporary -> testing tests
-	rw.WriteHeader(http.StatusOK) //check the status
-	webWriter(rw, "psst, a secret")
 }

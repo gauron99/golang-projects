@@ -27,13 +27,13 @@ func main() {
 
 	// handle possible cli arguments & set
 	flag.Parse()
-	server.Serv.SetParam(paramPtr)
+	serv := server.MakeServerInfo(0, "")
+	serv.Param = paramPtr
 
 	fmt.Println("Server started...")
 
-	http.HandleFunc("/", server.ApiHome)
-	http.HandleFunc("/hello", server.SayHello)
-	http.HandleFunc("/secret", server.Secret)
+	http.HandleFunc("/", serv.ApiHome)
+	http.HandleFunc("/hello", serv.SayHello)
 
 	fmt.Println("Listening on port 8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))

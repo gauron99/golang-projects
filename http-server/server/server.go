@@ -14,12 +14,12 @@ import (
 // change this to use methods in the file
 type serverInfo struct {
 	pageAccessCount int
-	Param           string
+	param           string
 }
 
 // MakeServerInfo creates & returns newly initialized serverInfo structure with given args
-func MakeServerInfo(pageAccessCnt int, parameter string) *serverInfo {
-	return &serverInfo{pageAccessCnt, parameter}
+func NewServerInfo(parameter string) *serverInfo {
+	return &serverInfo{0, parameter}
 }
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
@@ -29,9 +29,9 @@ var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conquero
 // additionally if ENV variable or CLI parameter are given, print those too
 func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
-	if len(si.Param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+	if len(si.param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
-		out := fmt.Sprintf("I have a parameter! Here: %s\n", si.Param)
+		out := fmt.Sprintf("I have a parameter! Here: %s\n", si.param)
 		io.WriteString(rw, out)
 	}
 }

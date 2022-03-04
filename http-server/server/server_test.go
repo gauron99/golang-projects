@@ -1,35 +1,47 @@
 package server
 
 import (
-	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-// TestResponse tests basic response function
-func TestResponse(t *testing.T) { // works
-	// template declaration >> WebWriter(rw http.ResponseWriter, s string)
-	req, err := http.NewRequest("GET", "/secret", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	res := httptest.NewRecorder()
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////// TESTING WEBWRITER //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+type webWriterMetadataTestStruct struct {
+	name     string
+	metadata map[string]string //input, parameter, environment var
+	isError  bool
+}
 
-	hdl := http.HandlerFunc(Secret)
-
-	hdl.ServeHTTP(res, req)
-
-	// check status
-	if status := res.Code; status != http.StatusOK {
-		t.Errorf("status not ok bud :(")
-	}
-
-	// check body response
-	expected := "psst, a secret\n"
-	if res.Body.String() != expected {
-		t.Errorf("Body of response doesnt match really :(")
-
-	}
+var testsWebWriterMeta = []webWriterMetadataTestStruct{
+	{
+		name: "nothing passed, should pass",
+		metadata: map[string]string{
+			"input":  "",
+			"param":  "",
+			"envVar": "",
+		},
+		isError: false,
+	},
+	{
+		name: "just input given, should pass",
+		metadata: map[string]string{
+			"input":  "write this",
+			"param":  "",
+			"envVar": "",
+		},
+		isError: false,
+	},
+	{
+		name: "input + param given, should pass",
+		metadata: map[string]string{
+			"input":  "",
+			"param":  "",
+			"envVar": "",
+		},
+		isError: false,
+	},
 }
 
 // TestWebWriter tests webWriter function with & without parameter

@@ -17,14 +17,14 @@ type serverInfo struct {
 	param           string
 }
 
-var serv = serverInfo{}
+var Serv = serverInfo{}
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
 var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conqueror of Titans", "the Destroyer of Worlds", "the King of Oceans", "the King of Underworld"}
 
 // SetParam takes string argument and sets it as parameter for the program
-func SetParam(s string) {
-	serv.param = s
+func (si *serverInfo) SetParam(s string) {
+	si.param = s
 }
 
 // getParam returns program parameter as string
@@ -36,11 +36,9 @@ func (si serverInfo) getParam() string {
 // additionally if ENV variable or CLI parameter are given, print those too
 func webWriter(rw http.ResponseWriter, s string) {
 	fmt.Fprintf(rw, "%s\n", s)
-	if len(serv.getParam()) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+	if len(Serv.getParam()) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
-		out := fmt.Sprintf("I have a parameter! Here: %s\n", serv.getParam())
-		// outPrt := fmt.Sprintf("I have a parameter!! Here: %s\n", param)
-		// fmt.Fprintf(rw, outPrt)
+		out := fmt.Sprintf("I have a parameter! Here: %s\n", Serv.getParam())
 		io.WriteString(rw, out)
 	}
 }
@@ -73,9 +71,9 @@ func SayHello(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 	if !nameExists {
-		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(serv.pageAccessCount), 10)+"x times")
+		webWriter(rw, "Hello there stranger! This page has been accessed "+strconv.FormatInt(int64(Serv.pageAccessCount), 10)+"x times")
 	}
-	serv.pageAccessCount += 1
+	Serv.pageAccessCount += 1
 }
 
 func ApiHome(rw http.ResponseWriter, req *http.Request) {

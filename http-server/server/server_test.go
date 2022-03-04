@@ -44,7 +44,7 @@ func TestWebWriter(t *testing.T) {
 	res = httptest.NewRecorder()
 
 	paramTest := "parameter value is me"
-	SetParam(paramTest)
+	Serv.SetParam(paramTest)
 	expPreParam := "I have a parameter! Here: "
 
 	writeTest := "testing 2"

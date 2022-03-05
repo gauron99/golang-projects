@@ -28,7 +28,9 @@ var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conquero
 // webWriter takes input string and writes it to browser
 // additionally if ENV variable or CLI parameter are given, print those too
 func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
-	fmt.Fprintf(rw, "%s\n", s)
+	if s != "" {
+		fmt.Fprintf(rw, "%s\n", s)
+	}
 	if len(si.param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
 		out := fmt.Sprintf("I have a parameter! Here: %s\n", si.param)

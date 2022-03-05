@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
@@ -14,7 +15,7 @@ type webWriterMetadataTestStruct struct {
 	isError  bool
 }
 
-var testsWebWriterMeta = []webWriterMetadataTestStruct{
+var testsWebWriterMetaData = []webWriterMetadataTestStruct{
 	{
 		name: "nothing passed, should pass",
 		metadata: map[string]string{
@@ -27,7 +28,7 @@ var testsWebWriterMeta = []webWriterMetadataTestStruct{
 	{
 		name: "just input given, should pass",
 		metadata: map[string]string{
-			"input":  "write this",
+			"input":  "input written",
 			"param":  "",
 			"envVar": "",
 		},
@@ -36,8 +37,8 @@ var testsWebWriterMeta = []webWriterMetadataTestStruct{
 	{
 		name: "input + param given, should pass",
 		metadata: map[string]string{
-			"input":  "",
-			"param":  "",
+			"input":  "input written",
+			"param":  "param given",
 			"envVar": "",
 		},
 		isError: false,
@@ -47,25 +48,37 @@ var testsWebWriterMeta = []webWriterMetadataTestStruct{
 // TestWebWriter tests webWriter function with & without parameter
 // (does not use interfaces)
 func TestWebWriter(t *testing.T) {
-	res := httptest.NewRecorder()
-	webWriter(res, "testing one")
-	if res.Body.String() != "testing one\n" {
-		t.Errorf("Wrong response, no parameter. Expected: %v; got: %v", "testing one\n", res.Body.String())
+	s := NewServerInfo("")
+
+	paramPre := "I have a parameter! Here: "
+	envVarPre := ""
+
+	for _, data := range testsWebWriterMetaData {
+		t.Run(data.name, func(t *testing.T) {
+			res := httptest.NewRecorder()
+			s.param = data.metadata["param"]
+
+			s.webWriter(res, data.metadata["input"])
+			if res.Result().StatusCode != http.StatusOK {
+				t.Error("Expected status '200 OK' but got:", res.Result().Status)
+			}
+
+			exp := ""
+			if data.metadata["input"] != "" {
+				exp += data.metadata["input"] + "\n"
+			}
+			if data.metadata["param"] != "" {
+				exp += paramPre + data.metadata["param"] + "\n"
+			}
+			if data.metadata["envVar"] != "" {
+				exp += envVarPre + data.metadata["envVar"] + "\n"
+			}
+
+			if res.Body.String() != exp {
+				t.Error("data printed out (", res.Body.String(), ") does not match the expected (", exp, ")")
+			}
+
+		})
 	}
-	// fresh recorder
-	res = httptest.NewRecorder()
 
-	paramTest := "parameter value is me"
-	Serv.SetParam(paramTest)
-	expPreParam := "I have a parameter! Here: "
-
-	writeTest := "testing 2"
-	webWriter(res, writeTest)
-
-	exp := (writeTest + "\n" + expPreParam + paramTest + "\n")
-	if res.Body.String() != exp {
-		t.Errorf("Wrong response, with parameter. Expected: %v; got: %v", exp, res.Body.String())
-	}
-
-	//TODO test error case next
 }

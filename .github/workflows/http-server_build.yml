@@ -3,9 +3,11 @@ on:
   push:
     paths: 
       - http-server/**
+      - .github/workflows/**
   pull_request:
     paths:
       - http-server/**
+      - .github/workflows/**
 
 jobs:
   validate:
@@ -16,17 +18,21 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2.2.0
         with:
-          go-version: 1.16
-# possibly install necesary pacakges here
+          go-version: 1.17
+      - name: Install necessary packages
+        run: apt update && apt install -y gcc
 
       - name: Check out code
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-  
+          
       - name: Build
-        run: cd http-server && go build ./...
+        working-directory: "./http-server"
+        run: go build ./...
 
-      # name: Test
-      # run: go test
+      # run basic tests for server
+      - name: Test
+        working-directory: "./http-server/server"
+        run: go test
       

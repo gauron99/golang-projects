@@ -10,31 +10,21 @@ import (
 	"server/server"
 )
 
-// --- Parse cli arguments ---
-// Only looking for long: "param" / short: "p"
-// Can be given with "=" or as following argument
-// 		ex: "--param=hello" or "--param hello" or "-p=hello"
-// If param is given multiple times, save only the last one
-
-func init() {
-
-	flag.StringVar(&server.Param, "param", "", "print this everywhere")
-	flag.StringVar(&server.Param, "p", "", "print this everywhere")
-
-}
-
 func main() {
+	var paramPtr string
+	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")
+	flag.StringVar(&paramPtr, "p", "", "print this everywhere(short)")
 
 	// handle possible cli arguments & set
 	flag.Parse()
-	fmt.Println(server.Param)
+	serv := server.NewServerInfo(paramPtr)
 
 	fmt.Println("Server started...")
-	defer fmt.Println("Server closed. Bye") //print at the end? need to catch signal to properly end main() probably
 
-	http.HandleFunc("/", server.ApiHome)
-	http.HandleFunc("/hello", server.SayHello)
+	http.HandleFunc("/", serv.ApiHome)
+	http.HandleFunc("/hello", serv.SayHello)
 
+	fmt.Println("Listening on port 8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))
 
 }

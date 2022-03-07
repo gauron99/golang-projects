@@ -1,51 +1,84 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 )
 
-/*
-// TestWebWriter tests webWriter() function and its different input
-// possibilities (with if statement for cli parameter or env variable)
-func TestWebWriter(t *testing.T) {
-	// template declaration >> WebWriter(rw http.ResponseWriter, s string)
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	hdl := http.HandlerFunc()
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////// TESTING WEBWRITER //////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+type webWriterMetadataTestStruct struct {
+	name     string
+	metadata map[string]string //input, parameter, environment var
+	isError  bool
 }
-*/
 
-// TestApiHome test api call to home page "/"
-// It is expected that current time will be printed out
-func TestApiHome(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
+var testsWebWriterMetaData = []webWriterMetadataTestStruct{
+	{
+		name: "nothing passed, should pass",
+		metadata: map[string]string{
+			"input":  "",
+			"param":  "",
+			"envVar": "",
+		},
+		isError: false,
+	},
+	{
+		name: "just input given, should pass",
+		metadata: map[string]string{
+			"input":  "input written",
+			"param":  "",
+			"envVar": "",
+		},
+		isError: false,
+	},
+	{
+		name: "input + param given, should pass",
+		metadata: map[string]string{
+			"input":  "input written",
+			"param":  "param given",
+			"envVar": "",
+		},
+		isError: false,
+	},
+}
+
+// TestWebWriter tests webWriter function with & without parameter
+// (does not use interfaces)
+func TestWebWriter(t *testing.T) {
+	s := NewServerInfo("")
+
+	paramPre := "I have a parameter! Here: "
+	envVarPre := ""
+
+	for _, data := range testsWebWriterMetaData {
+		t.Run(data.name, func(t *testing.T) {
+			res := httptest.NewRecorder()
+			s.param = data.metadata["param"]
+
+			s.webWriter(res, data.metadata["input"])
+			if res.Result().StatusCode != http.StatusOK {
+				t.Error("Expected status '200 OK' but got:", res.Result().Status)
+			}
+
+			exp := ""
+			if data.metadata["input"] != "" {
+				exp += data.metadata["input"] + "\n"
+			}
+			if data.metadata["param"] != "" {
+				exp += paramPre + data.metadata["param"] + "\n"
+			}
+			if data.metadata["envVar"] != "" {
+				exp += envVarPre + data.metadata["envVar"] + "\n"
+			}
+
+			if res.Body.String() != exp {
+				t.Error("data printed out (", res.Body.String(), ") does not match the expected (", exp, ")")
+			}
+
+		})
 	}
-	rr := httptest.NewRecorder()
-	hdlr := http.HandlerFunc(ApiHome)
-	hdlr.ServeHTTP(rr, req)
 
-	fmt.Println("status:", rr.Code)
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	expected := time.Now().Format("2006-01-02 15:04:05")
-	got := rr.Body.String()
-
-	fmt.Println("exp:", expected, "; got:", got)
-	if got != expected {
-
-		t.Errorf("Http body fail. Expected %v but got %v ", expected, got)
-	}
 }

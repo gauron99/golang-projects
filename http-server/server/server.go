@@ -97,5 +97,7 @@ func (si serverInfo) ApiHome(rw http.ResponseWriter, req *http.Request) {
 	// 	}
 	// }
 	out := time.Now().Format("2006-01-02 15:04:05")
+	// out = strings.TrimSuffix(out, "\n")
+	// fmt.Println("LALA", out)
 	si.webWriter(rw, out)
 }

@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 )
@@ -49,10 +50,11 @@ var testsWebWriterMetaData = []webWriterMetadataTestStruct{
 // TestWebWriter tests webWriter function with & without parameter
 // (does not use interfaces)
 func TestWebWriter(t *testing.T) {
+	os.Clearenv()
 	s := NewServerInfo("")
 
 	paramPre := "I have a parameter! Here: "
-	envVarPre := ""
+	envVarPre := "\nMy environment variables: "
 
 	for _, data := range testsWebWriterMetaData {
 		t.Run(data.name, func(t *testing.T) {
@@ -85,15 +87,16 @@ func TestWebWriter(t *testing.T) {
 
 // TestApiHome test ApiHome handler for "/"
 func TestApiHome(t *testing.T) {
+	os.Clearenv()
 	s := NewServerInfo("")
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
+	res := httptest.NewRecorder()
 
-	s.ApiHome(rec, req)
-	exp := time.Now().Format("2006-01-02 15:04:05")
-	got := rec.Body.String()
+	s.ApiHome(res, req)
+	exp := time.Now().Format("2006-01-02 15:04:05") + "\n"
+	got := res.Body.String()
 	if got != exp {
-		t.Error("got ", got, ", but expected ", exp, "(time is formated, cut to seconds (diffs in 2 time.Now() calls is in thousandths of secs))")
+		t.Errorf("got |%s|, but expected |%s|", got, exp)
 	}
 }

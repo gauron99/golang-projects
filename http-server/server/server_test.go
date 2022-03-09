@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,5 +81,19 @@ func TestWebWriter(t *testing.T) {
 
 		})
 	}
+}
 
+// TestApiHome test ApiHome handler for "/"
+func TestApiHome(t *testing.T) {
+	s := NewServerInfo("")
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+
+	s.ApiHome(rec, req)
+	exp := time.Now().Format("2006-01-02 15:04:05")
+	got := rec.Body.String()
+	if got != exp {
+		t.Error("got ", got, ", but expected ", exp, "(time is formated, cut to seconds (diffs in 2 time.Now() calls is in thousandths of secs))")
+	}
 }

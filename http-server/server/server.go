@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +16,16 @@ import (
 type serverInfo struct {
 	pageAccessCount int
 	param           string
+}
+
+// getEnvVars reads all env variables and returns them as a map (foo[key] = val)
+func getEnvVars() map[string]string {
+	res := make(map[string]string)
+	for _, env := range os.Environ() {
+		pair := strings.Split(env, "=")
+		res[pair[0]] = pair[1]
+	}
+	return res
 }
 
 // MakeServerInfo creates & returns newly initialized serverInfo structure with given args
@@ -29,12 +40,17 @@ var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conquero
 // additionally if ENV variable or CLI parameter are given, print those too
 func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
 	if s != "" {
-		fmt.Fprintf(rw, "%s\n", s)
+		outS := fmt.Sprintf("%s\n", s)
+		io.WriteString(rw, outS)
 	}
-	if len(si.param) > 0 { //if a parameter is given, print it out everywhere where something is printed out
+	if par := si.param; len(par) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
-		out := fmt.Sprintf("I have a parameter! Here: %s\n", si.param)
-		io.WriteString(rw, out)
+		outParam := fmt.Sprintf("I have a parameter! Here: %s\n", par)
+		io.WriteString(rw, outParam)
+	}
+	if vars := getEnvVars(); len(vars) > 0 {
+		outVars := fmt.Sprintf("\nMy environment variables: %v\n", vars)
+		io.WriteString(rw, outVars)
 	}
 }
 
@@ -80,6 +96,6 @@ func (si serverInfo) ApiHome(rw http.ResponseWriter, req *http.Request) {
 	// 		fmt.Fprintf(rw, t.Format("2006-01-02 15:04:05"))
 	// 	}
 	// }
-	t := time.Now()
-	fmt.Println("Now: ", t.Format("2006-01-02 15:04:05"))
+	out := time.Now().Format("2006-01-02 15:04:05")
+	si.webWriter(rw, out)
 }

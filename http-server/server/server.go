@@ -24,7 +24,7 @@ type serverInfo struct {
 // LoadSettings reads data from a file called "env" in current dir
 // and sets all environment variables for this run.
 // Returns map of keys&values in the env file.
-func LoadSettings() (vars map[string]string, err error) {
+func loadSettings() (vars map[string]string, err error) {
 	dir, err := os.Getwd()
 	vars = make(map[string]string)
 	var filName string
@@ -69,7 +69,11 @@ func (si serverInfo) getEnvVars() map[string]string {
 }
 
 // MakeServerInfo creates & returns newly initialized serverInfo structure with given args
-func NewServerInfo(parameter string, vars map[string]string) *serverInfo {
+func NewServerInfo(parameter string) *serverInfo {
+	vars, e := loadSettings()
+	if e != nil {
+		log.Fatal(e) //print out error and exit
+	}
 	return &serverInfo{0, parameter, vars}
 }
 

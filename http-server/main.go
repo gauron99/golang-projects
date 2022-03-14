@@ -13,11 +13,6 @@ import (
 )
 
 func main() {
-	vars, e := server.LoadSettings()
-	if e != nil {
-		log.Fatal(e) //print out error and exit
-	}
-
 	var paramPtr string
 	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")
 	flag.StringVar(&paramPtr, "p", "", "print this everywhere(short)")
@@ -33,7 +28,7 @@ func main() {
 		}
 	}
 
-	serv := server.NewServerInfo(paramPtr, vars)
+	serv := server.NewServerInfo(paramPtr)
 
 	fmt.Println("Server started...")
 

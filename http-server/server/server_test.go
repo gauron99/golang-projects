@@ -115,7 +115,7 @@ var testsWebWriterMetaData = []webWriterMetadataTestStruct{
 // TestWebWriter tests webWriter function with & without parameter
 func TestWebWriter(t *testing.T) {
 
-	s := NewServerInfo("", nil)
+	s := NewServerInfo("")
 
 	paramPre := "I have a parameter! Here: "
 	envVarPre := "\nMy environment variables: "
@@ -155,13 +155,20 @@ func TestWebWriter(t *testing.T) {
 // TestApiHome test ApiHome handler for "/"
 func TestApiHome(t *testing.T) {
 
-	s := NewServerInfo("", nil)
+	s := NewServerInfo("")
+
+	envVarPre := "\nMy environment variables: "
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	res := httptest.NewRecorder()
 
 	s.ApiHome(res, req)
 	exp := time.Now().Format("2006-01-02 15:04:05") + "\n"
+
+	if len(s.variables) > 0 {
+		exp += fmt.Sprintf("%s%v\n", envVarPre, s.variables)
+	}
+
 	got := res.Body.String()
 	if got != exp {
 		t.Errorf("got |%s|, but expected |%s|", got, exp)

@@ -1,0 +1,3 @@
+BAR=i_am_env_var
+FOO=im_error
+CAT=

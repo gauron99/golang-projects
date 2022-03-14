@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 	"time"
 )
@@ -115,7 +114,8 @@ var testsWebWriterMetaData = []webWriterMetadataTestStruct{
 
 // TestWebWriter tests webWriter function with & without parameter
 func TestWebWriter(t *testing.T) {
-	s := NewServerInfo("")
+
+	s := NewServerInfo("", nil)
 
 	paramPre := "I have a parameter! Here: "
 	envVarPre := "\nMy environment variables: "
@@ -125,12 +125,7 @@ func TestWebWriter(t *testing.T) {
 			res := httptest.NewRecorder()
 			// set parameter
 			s.param = data.metadata["param"].(string)
-
-			// set environment vars
-			os.Clearenv()
-			for k, v := range data.metadata["envVar"].(map[string]string) {
-				os.Setenv(k, v)
-			}
+			s.variables = data.metadata["envVar"].(map[string]string)
 
 			s.webWriter(res, data.metadata["input"].(string))
 			if res.Result().StatusCode != http.StatusOK {
@@ -144,6 +139,7 @@ func TestWebWriter(t *testing.T) {
 			if data.metadata["param"] != "" {
 				exp += paramPre + data.metadata["param"].(string) + "\n"
 			}
+
 			if len(data.metadata["envVar"].(map[string]string)) > 0 {
 				exp += fmt.Sprintf("%s%v\n", envVarPre, data.metadata["envVar"].(map[string]string))
 			}
@@ -158,8 +154,8 @@ func TestWebWriter(t *testing.T) {
 
 // TestApiHome test ApiHome handler for "/"
 func TestApiHome(t *testing.T) {
-	os.Clearenv()
-	s := NewServerInfo("")
+
+	s := NewServerInfo("", nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	res := httptest.NewRecorder()

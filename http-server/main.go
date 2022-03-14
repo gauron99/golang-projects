@@ -28,8 +28,10 @@ func main() {
 		}
 	}
 
-	serv := server.NewServerInfo(paramPtr)
-
+	serv, e := server.NewServerInfo(paramPtr)
+	if e != nil {
+		log.Fatal(e)
+	}
 	fmt.Println("Server started...")
 
 	http.HandleFunc("/", serv.ApiHome)

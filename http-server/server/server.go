@@ -36,9 +36,11 @@ func loadSettings() (vars map[string]string, err error) {
 	}
 	f, err := os.Open(filName)
 
+	// prematurely return an error
 	if err != nil {
 		return nil, err
 	}
+
 	defer f.Close() // close when func is done
 
 	scanner := bufio.NewScanner(f)
@@ -69,12 +71,9 @@ func (si serverInfo) getEnvVars() map[string]string {
 }
 
 // MakeServerInfo creates & returns newly initialized serverInfo structure with given args
-func NewServerInfo(parameter string) *serverInfo {
+func NewServerInfo(parameter string) (*serverInfo, error) {
 	vars, e := loadSettings()
-	if e != nil {
-		log.Fatal(e) //print out error and exit
-	}
-	return &serverInfo{0, parameter, vars}
+	return &serverInfo{0, parameter, vars}, e
 }
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}

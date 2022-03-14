@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -115,7 +116,10 @@ var testsWebWriterMetaData = []webWriterMetadataTestStruct{
 // TestWebWriter tests webWriter function with & without parameter
 func TestWebWriter(t *testing.T) {
 
-	s := NewServerInfo("")
+	s, e := NewServerInfo("")
+	if e != nil {
+		log.Fatal(e)
+	}
 
 	paramPre := "I have a parameter! Here: "
 	envVarPre := "\nMy environment variables: "
@@ -155,7 +159,10 @@ func TestWebWriter(t *testing.T) {
 // TestApiHome test ApiHome handler for "/"
 func TestApiHome(t *testing.T) {
 
-	s := NewServerInfo("")
+	s, e := NewServerInfo("")
+	if e != nil {
+		log.Fatal(e)
+	}
 
 	envVarPre := "\nMy environment variables: "
 

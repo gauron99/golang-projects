@@ -13,22 +13,17 @@ import (
 	"server/server"
 )
 
-// checkErr is a helper function for checking if return values are nil
-func checkErr(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 // loadEnvSettings reads data from a file called "env" in current dir
 // and sets all environment variables for this run.
 // Returns slice of keys in the env file.
-func loadEnvSettings() {
+func loadEnvSettings() (err error) {
 
 	//clear all pre-set variables since we dont need any
 	os.Clearenv()
 	f, err := os.Open("./env")
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer f.Close() // close when func is done
 
 	scanner := bufio.NewScanner(f)
@@ -40,15 +35,22 @@ func loadEnvSettings() {
 			continue //lines starting with '#' are comments
 		}
 		if !strings.Contains(line, "=") { //line has to contain '='
-			panic("line in env file doesn't contain '='")
+			log.Println("Warning: env_file wasn't properly loaded; line in env file doesn't contain '=':", line)
+			return nil
 		}
 		split := strings.Split(line, "=")
 		os.Setenv(split[0], split[1])
 	}
+	return nil
 }
 
 func main() {
-	loadEnvSettings()
+	e := loadEnvSettings()
+	if e != nil {
+		log.Fatal(e) //print out error and exit
+	}
+
+	os.Setenv("HARDCODED", "nejvic") //custom env var
 
 	var paramPtr string
 	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")

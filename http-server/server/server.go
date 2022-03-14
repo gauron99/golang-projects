@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"io"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -41,16 +42,26 @@ var titles = []string{"the Mighty Traveler", "the Great Summoner", "the Conquero
 func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
 	if s != "" {
 		outS := fmt.Sprintf("%s\n", s)
-		io.WriteString(rw, outS)
+		_, err := io.WriteString(rw, outS)
+		if err != nil {
+			log.Printf("Error while writing string: %s", err)
+		}
 	}
+
 	if par := si.param; len(par) > 0 { //if a parameter is given, print it out everywhere where something is printed out
 
 		outParam := fmt.Sprintf("I have a parameter! Here: %s\n", par)
-		io.WriteString(rw, outParam)
+		_, err := io.WriteString(rw, outParam)
+		if err != nil {
+			log.Printf("Error while writing paramaters: %s", err)
+		}
 	}
 	if vars := getEnvVars(); len(vars) > 0 {
 		outVars := fmt.Sprintf("\nMy environment variables: %v\n", vars)
-		io.WriteString(rw, outVars)
+		_, err := io.WriteString(rw, outVars)
+		if err != nil {
+			log.Printf("Error while writing environment variables: %s", err)
+		}
 	}
 }
 
@@ -62,7 +73,8 @@ func (si *serverInfo) SayHello(rw http.ResponseWriter, req *http.Request) {
 	URL := req.URL.String()
 	u, err := url.Parse(URL) //parsed url
 	if err != nil {
-		panic(err)
+		log.Printf("Error while parsing URL: %s", err)
+		rw.WriteHeader(500)
 	}
 	// parse query
 	args, _ := url.ParseQuery(u.RawQuery)

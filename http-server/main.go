@@ -49,11 +49,14 @@ func main() {
 	if e != nil {
 		log.Fatal(e) //print out error and exit
 	}
+
 	os.Setenv("SERVER_PARAM", "param but better") //custom env var
+
 
 	var paramPtr string
 	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")
 	flag.StringVar(&paramPtr, "p", "", "print this everywhere(short)")
+
 	flag.Parse()
 
 	// have default parameter set as ENV variable if --param is not given

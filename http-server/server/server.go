@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -17,21 +18,62 @@ import (
 type serverInfo struct {
 	pageAccessCount int
 	param           string
+	variables       map[string]string
+}
+
+// LoadSettings reads data from a file called "env" in current dir
+// and sets all environment variables for this run.
+// Returns map of keys&values in the env file.
+func loadSettings() (vars map[string]string, err error) {
+	dir, err := os.Getwd()
+	vars = make(map[string]string)
+	var filName string
+	if strings.HasSuffix(dir, "/server") {
+		// trying to run this in server/server_test.go
+		filName = "../env"
+	} else {
+		filName = "./env"
+	}
+	f, err := os.Open(filName)
+
+	// prematurely return an error
+	if err != nil {
+		return nil, err
+	}
+
+	defer f.Close() // close when func is done
+
+	scanner := bufio.NewScanner(f)
+
+	// cycle through each line
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "#") {
+			continue //lines starting with '#' are comments
+		}
+		if !strings.Contains(line, "=") { //line has to contain '='
+			log.Println("Warning: env_file wasn't properly loaded; line in env file doesn't contain '=':", line)
+			return vars, nil
+		}
+		split := strings.Split(line, "=")
+		vars[split[0]] = split[1]
+	}
+	return vars, nil
 }
 
 // getEnvVars reads all env variables and returns them as a map (foo[key] = val)
-func getEnvVars() map[string]string {
+func (si serverInfo) getEnvVars() map[string]string {
 	res := make(map[string]string)
-	for _, env := range os.Environ() {
-		pair := strings.Split(env, "=")
-		res[pair[0]] = pair[1]
+	for key, val := range si.variables {
+		res[key] = val
 	}
 	return res
 }
 
 // MakeServerInfo creates & returns newly initialized serverInfo structure with given args
-func NewServerInfo(parameter string) *serverInfo {
-	return &serverInfo{0, parameter}
+func NewServerInfo(parameter string) (*serverInfo, error) {
+	vars, e := loadSettings()
+	return &serverInfo{0, parameter, vars}, e
 }
 
 var greetings = []string{"Hello", "Greetings", "Welcome", "Hi"}
@@ -56,7 +98,7 @@ func (si serverInfo) webWriter(rw http.ResponseWriter, s string) {
 			log.Printf("Error while writing paramaters: %s", err)
 		}
 	}
-	if vars := getEnvVars(); len(vars) > 0 {
+	if vars := si.getEnvVars(); len(vars) > 0 {
 		outVars := fmt.Sprintf("\nMy environment variables: %v\n", vars)
 		_, err := io.WriteString(rw, outVars)
 		if err != nil {
@@ -87,9 +129,14 @@ func (si *serverInfo) SayHello(rw http.ResponseWriter, req *http.Request) {
 			if len(val) == 1 && len(val[0]) == 0 { //no name given
 				si.webWriter(rw, "Greetings Mr. Nobody!")
 			} else { // atleast one name given
-				for _, name := range val {
-					si.webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
+				names := ""
+				for i, name := range val {
+					names += greetings[rand.Intn(len(greetings))] + " " + name + " " + titles[rand.Intn(len(titles))]
+					if i < len(val)-1 {
+						names += " and "
+					}
 				}
+				si.webWriter(rw, names)
 			}
 		}
 	}

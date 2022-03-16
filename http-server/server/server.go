@@ -129,9 +129,14 @@ func (si *serverInfo) SayHello(rw http.ResponseWriter, req *http.Request) {
 			if len(val) == 1 && len(val[0]) == 0 { //no name given
 				si.webWriter(rw, "Greetings Mr. Nobody!")
 			} else { // atleast one name given
-				for _, name := range val {
-					si.webWriter(rw, greetings[rand.Intn(len(greetings))]+" "+name+" "+titles[rand.Intn(len(titles))])
+				names := ""
+				for i, name := range val {
+					names += greetings[rand.Intn(len(greetings))] + " " + name + " " + titles[rand.Intn(len(titles))]
+					if i < len(val)-1 {
+						names += " and "
+					}
 				}
+				si.webWriter(rw, names)
 			}
 		}
 	}

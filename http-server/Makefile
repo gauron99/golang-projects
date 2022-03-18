@@ -3,7 +3,7 @@
 all: build run
 
 build:
-	sudo docker build -t app .
+	docker build -t app .
 
 run:
-	sudo docker run -p 8000:8001 -it app
+	docker run -p 8000:8001 -it app

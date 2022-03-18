@@ -2,8 +2,8 @@ name: ci
 
 on:
   push:
-    branches: 
-      - main
+    # branches: 
+      # - main
     # consider only http-server dir and/or github workflow dir
     paths: 
       - http-server/**

@@ -37,7 +37,6 @@ func main() {
 	http.HandleFunc("/", serv.ApiHome)
 	http.HandleFunc("/hello", serv.SayHello)
 
-	fmt.Println("Listening on port 8000 via Docker")
 	log.Fatal(http.ListenAndServe(":8001", nil))
 
 

@@ -40,4 +40,5 @@ func main() {
 	fmt.Println("Listening on port 8000 via Docker")
 	log.Fatal(http.ListenAndServe(":8001", nil))
 
+
 }

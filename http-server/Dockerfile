@@ -1,15 +1,11 @@
 FROM golang AS builder
 
 RUN mkdir -p /build
-RUN echo "buidler"
-RUN ls
 ADD . /build
 
 WORKDIR /build
 RUN go build -o main .
 
 FROM alpine
-RUN echo "alpine"
-RUN ls
-COPY --from=builder 
+COPY --from=builder ./build/main ./main 
 CMD ["/build/main"]

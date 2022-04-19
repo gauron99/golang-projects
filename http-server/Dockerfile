@@ -1,11 +1,10 @@
 FROM golang AS builder
 
-RUN mkdir -p /build
-ADD . /build
-
+COPY . /build
 WORKDIR /build
 RUN go build -o main .
 
-FROM alpine
-COPY --from=builder ./build/main ./main 
-CMD ["/build/main"]
+FROM ubuntu
+COPY --from=builder /build/main /main
+COPY --from=builder /build/env /env
+CMD ["./main"]

@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// default PORT value
-	var PORT = "8000"
+	var PORT = "8080"
 	var paramPtr string
 	var portPtr string
 	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")

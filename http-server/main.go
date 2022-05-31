@@ -13,9 +13,13 @@ import (
 )
 
 func main() {
+	// default PORT value
+	var PORT = "8080"
 	var paramPtr string
+	var portPtr string
 	flag.StringVar(&paramPtr, "param", "", "print this everywhere(long)")
 	flag.StringVar(&paramPtr, "p", "", "print this everywhere(short)")
+	flag.StringVar(&portPtr, "port", "", "add port to run on (default="+PORT+")")
 
 	flag.Parse()
 
@@ -28,6 +32,11 @@ func main() {
 		}
 	}
 
+	// check if port was given
+	if portPtr != "" {
+		PORT = portPtr
+	}
+
 	serv, e := server.NewServerInfo(paramPtr)
 	if e != nil {
 		log.Fatal(e)
@@ -37,7 +46,7 @@ func main() {
 	http.HandleFunc("/", serv.ApiHome)
 	http.HandleFunc("/hello", serv.SayHello)
 
-	fmt.Println("Listening on port 8000")
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	log.Println("Listening on port: ", PORT)
+	log.Fatal(http.ListenAndServe(":"+PORT, nil))
 
 }

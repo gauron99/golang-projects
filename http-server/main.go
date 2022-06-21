@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"server/server"
+	"my-server/server"
 )
 
 func main() {
